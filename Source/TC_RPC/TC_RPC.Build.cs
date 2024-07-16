@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class TC_RPC : ModuleRules
@@ -7,17 +8,18 @@ public class TC_RPC : ModuleRules
 	public TC_RPC(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
+
+		bEnableUndefinedIdentifierWarnings = false;
 		PublicIncludePaths.AddRange(
 			new string[] {
-				// ... add public include paths required here ...
 			}
 			);
-				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				// ... add other private include paths required here ...
+				Path.Combine(ModuleDirectory, "../asio2/3rd"),
+				Path.Combine(ModuleDirectory, "../asio2/3rd/openssl/include"),
+				Path.Combine(ModuleDirectory, "../asio2/include")
 			}
 			);
 			
