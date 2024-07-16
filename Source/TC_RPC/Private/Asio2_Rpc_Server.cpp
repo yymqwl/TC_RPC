@@ -25,7 +25,7 @@ bool UAsio2_Rpc_Server::Init(uint32 recv_buf_size ,uint32 recv_buf_max_size)
 		Ptr_Rpc_Server = nullptr;
 	}
 	
-	auto threadNum = std::max(std::thread::hardware_concurrency(),(uint32)1);
+	auto threadNum = std::max(std::thread::hardware_concurrency(), (uint32)1);
 	
 	
 	Ptr_Rpc_Server = MakeUnique<asio2::rpc_kcp_server>(recv_buf_size,recv_buf_max_size,threadNum);
@@ -72,11 +72,10 @@ bool UAsio2_Rpc_Server::Bind_Start(FString host, uint32 port)
 	return bret;
 }
 
-TC_RPC_Message  UAsio2_Rpc_Server::Server_Reply(TC_RPC_Message tc_rpc_message)
+TC_RPC::TC_RPC_Message  UAsio2_Rpc_Server::Server_Reply(TC_RPC::TC_RPC_Message tc_rpc_message)
 {
 	//RPC_LOG(TEXT("Server_C2S: %d"),tc_rpc_message.MessageType);
-	TC_RPC_Message tc_rpc_message2;
-	tc_rpc_message2.Data = NewObject<URPC_Hello_Message>();
-	
+	TC_RPC::TC_RPC_Message tc_rpc_message2;
+	//tc_rpc_message2.Data = NewObject<URPC_Hello_Message>();
 	return tc_rpc_message2;
 }

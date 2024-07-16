@@ -54,7 +54,7 @@ void ATestRpcActor::Call_Test()
 	msg.Data = NewObject<URPC_Message>();*/
 	if (Ptr_Client!=nullptr)
 	{
-		Ptr_Client->Client_Request( NewObject<URPC_Hello_Message>() );	
+		Ptr_Client->Test_Client_Request( MakeShareable(NewObject<URPC_Message>() ));	
 	}
 }
 

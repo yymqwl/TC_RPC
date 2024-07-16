@@ -8,11 +8,13 @@
 #include "Asio2_Rpc_Client.h"
 #include "TestRpcActor.generated.h"
 
+
+
 UCLASS(BlueprintType,Blueprintable)
 class TC_RPC_API ATestRpcActor : public AActor
 {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ATestRpcActor();
