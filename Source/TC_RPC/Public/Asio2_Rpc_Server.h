@@ -26,9 +26,21 @@ public:
 	
 	virtual void Stop();
 
+	virtual TC_RPC::TC_RPC_Message2 Server_Reply2(TC_RPC::TC_RPC_Message2  tc_rpc_message);
+	
+	virtual TArray<uint8> Server_Reply3(TArray<uint8> data);
+
 	static std::string Get_STR_RPC_Server_Reply()
 	{
 		return "Server_Reply";
+	}
+	static std::string Get_STR_RPC_Server_Reply2()
+	{
+		return "Server_Reply2";
+	}
+	static std::string Get_STR_RPC_Server_Reply3()
+	{
+		return "Server_Reply3";
 	}
 protected:
 	TUniquePtr<asio2::rpc_kcp_server> Ptr_Rpc_Server;

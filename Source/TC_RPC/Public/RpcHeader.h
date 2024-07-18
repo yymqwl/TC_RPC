@@ -18,6 +18,9 @@
 #define RPC_RECEIVE_BUFFER_SIZE 1024
 #define RPC_RECEIVE_MAX_BUFFER_SIZE 1024*8
 
+
+//#define U_MESSAGE_TYPE uint16
+
 //#define RPC_SERVER_REPLY "Server_Reply"
 //#define 
 

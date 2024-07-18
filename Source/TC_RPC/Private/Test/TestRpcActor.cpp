@@ -54,8 +54,14 @@ void ATestRpcActor::Call_Test()
 	msg.Data = NewObject<URPC_Message>();*/
 	if (Ptr_Client!=nullptr)
 	{
-		Ptr_Client->Test_Client_Request( MakeShareable(NewObject<URPC_Message>() ));	
+		TArray<uint8> ay;
+		ay.Push(1);
+		ay.Push(2);
+		ay.Push(3);
+		Ptr_Client->Test_Client_Request2( MoveTemp(ay));
+		//Ptr_Client->Test_Client_Request( TWeakObjectPtr<URPC_Message>(NewObject<URPC_Message>() ));	
 	}
+	
 }
 
 

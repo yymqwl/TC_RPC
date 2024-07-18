@@ -13,6 +13,7 @@ namespace TC_RPC
 		PtrInvalid,//指针无效
 		ClientNotStart,//客户端没打开
 		Asio2NetError,//网络问题
+		MessageTypeNotFound,//消息未找到
 		Serialize,
 		Max
 	};

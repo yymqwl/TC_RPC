@@ -25,14 +25,13 @@ public:
 
 	//测试方法
 	//UFUNCTION()
-	virtual void Test_Client_Request(TSharedPtr<URPC_Message>  ptr_rpc_message);
+	virtual void Test_Client_Request(TWeakObjectPtr<URPC_Message>  ptr_rpc_message);
 
-	
-	TCoroutine<TC_RPC_Message> Request(uint16  messageType,TSharedPtr<URPC_Message> ptr_rpc_message);
-	
-	//UFUNCTION()
-	
-	
+	virtual void Test_Client_Request2(TArray<uint8>&& bytes);
+	virtual void Test_Client_Request3(TArray<uint8>&& bytes);
+	//TCoroutine<TC_RPC_Message> Request(  )
+
+	TCoroutine<TC_RPC_Message> Request(uint16  messageType,TWeakObjectPtr<URPC_Message> ptr_rpc_message);
 
 	void Stop();
 	

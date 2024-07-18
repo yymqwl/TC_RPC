@@ -67,10 +67,14 @@ bool UAsio2_Rpc_Server::Bind_Start(FString host, uint32 port)
 	Ptr_Rpc_Server->start( std::string_view( TCHAR_TO_UTF8(*host)),port);
 	
 	Ptr_Rpc_Server->bind(UAsio2_Rpc_Server::Get_STR_RPC_Server_Reply(),&UAsio2_Rpc_Server::Server_Reply,this);
-	
+	Ptr_Rpc_Server->bind(UAsio2_Rpc_Server::Get_STR_RPC_Server_Reply2(),&UAsio2_Rpc_Server::Server_Reply2,this);
+	Ptr_Rpc_Server->bind(UAsio2_Rpc_Server::Get_STR_RPC_Server_Reply3(),&UAsio2_Rpc_Server::Server_Reply3,this);
 	bret = true;
 	return bret;
 }
+
+
+
 
 TC_RPC::TC_RPC_Message  UAsio2_Rpc_Server::Server_Reply(TC_RPC::TC_RPC_Message tc_rpc_message)
 {
@@ -78,4 +82,13 @@ TC_RPC::TC_RPC_Message  UAsio2_Rpc_Server::Server_Reply(TC_RPC::TC_RPC_Message t
 	TC_RPC::TC_RPC_Message tc_rpc_message2;
 	//tc_rpc_message2.Data = NewObject<URPC_Hello_Message>();
 	return tc_rpc_message2;
+}
+
+TC_RPC::TC_RPC_Message2 UAsio2_Rpc_Server::Server_Reply2(TC_RPC::TC_RPC_Message2  tc_rpc_message)
+{
+	return tc_rpc_message;
+}
+TArray<uint8> UAsio2_Rpc_Server::Server_Reply3(TArray<uint8> data)
+{
+	return data;
 }
