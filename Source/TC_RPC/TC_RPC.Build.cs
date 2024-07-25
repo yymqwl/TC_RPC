@@ -9,12 +9,16 @@ public class TC_RPC : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		
 		bEnableUndefinedIdentifierWarnings = false;
 		PublicIncludePaths.AddRange(
 			new string[] {
+				Path.Combine(ModuleDirectory, "../asio2/3rd"),
+				Path.Combine(ModuleDirectory, "../asio2/3rd/openssl/include"),
+				Path.Combine(ModuleDirectory, "../asio2/include")
 			}
 			);
-		
+		/*
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				Path.Combine(ModuleDirectory, "../asio2/3rd"),
@@ -22,7 +26,7 @@ public class TC_RPC : ModuleRules
 				Path.Combine(ModuleDirectory, "../asio2/include")
 			}
 			);
-			
+		*/
 		
 		PublicDependencyModuleNames.AddRange(
 			new string[]

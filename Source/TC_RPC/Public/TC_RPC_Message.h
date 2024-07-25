@@ -1,233 +1,154 @@
 ﻿#pragma once
 
+
+#include "RpcHeader.h"
 #include "RPC_Log.h"
 #include "RPC_ErrorCode.h"
-#include "RPC_Message.h"
 #include "CoreMinimal.h"
-#include "RpcSubsystem.h"
-#include "Serialization/BufferArchive.h"
 
 namespace TC_RPC
 {
-	struct  TC_RPC_Message//必须要默认值,否者UE会设置乱值
-	{
-	public:
-		uint16 MessageType;//
-		uint8 ErrorCode;//
-		TWeakObjectPtr<URPC_Message> Data;
-		TC_RPC_Message(uint16 messageType = 0 /*StaticCast<uint16>(ERPC_MessageType::None*/,
-			uint8 errorCode = StaticCast<uint8>(ERPC_ErrorCode::None),
-			TWeakObjectPtr<URPC_Message> ptr = nullptr
-			)
-		:MessageType(messageType),ErrorCode(errorCode),Data(ptr)
-		{
-			//Data->RemoveFromRoot()
-		}
-
-		void AddToRoot()
-		{
-			if (Data.IsValid())
-			{
-				Data->AddToRoot();
-			}
-		}
-		void RemoveFromRoot()
-		{
-			if (Data.IsValid())
-			{
-				Data->RemoveFromRoot();
-			}
-		}
-		
-		template<class Archive>
-		void save( Archive & ar ) const
-		{
-			//RPC_LOG(TEXT("save"));
-			//ar << MessageType;
-			if (!Data.IsValid())//没有数值
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message Data Null"));
-				//ErrorCode = StaticCast<uint8>(ERPC_ErrorCode::Serialize);
-				ar << StaticCast<uint8>(ERPC_ErrorCode::Serialize);
-				return;
-			}
-		
-		
-			FBufferArchive MessageWriter;
-			Data->Serialize(MessageWriter);
-			int64 len = MessageWriter.TotalSize();
-			if (len <= 0)
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message Data Null"));
-				ar << StaticCast<uint8>(ERPC_ErrorCode::Serialize);
-				return;
-			}
-			ar << ErrorCode;
-			ar << MessageType;
-			ar << len;
-			ar << cereal::binary_data(const_cast<uint8*>(MessageWriter.GetData()),MessageWriter.TotalSize());
-		}
-		template<class Archive>
-		void load( Archive & ar )
-		{
-			//RPC_LOG(TEXT("load"));
-			ar >> ErrorCode;
-			//RPC_LOG(TEXT("load: %d ,%d"), StaticCast<uint8>(ERPC_ErrorCode::None),ErrorCode);
-			if (ErrorCode != StaticCast<uint8>(ERPC_ErrorCode::None) )
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message load ErrorCode %d"),ErrorCode);
-				return ;
-			}
-			ar >> MessageType;
-			int64 len;
-			ar >> len;
-			if (len  <= 0 )
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message Load len <0 "));
-				return;
-			}
-			TArray<uint8> BinaryData;
-			BinaryData.SetNum(len);
-
-			//BinaryData.GetData()
-			//BinaryData.SetNum()
-
-		
-			FMemoryReader MessageReader(BinaryData);
-			ar >> cereal::binary_data(const_cast<uint8*>(BinaryData.GetData()),len);
-
-
-			
-			checkf((GWorld == nullptr),TEXT("Null GWorld"));
-			auto  RpcSubsystem = GWorld->GetGameInstance()->GetSubsystem<URpcSubsystem>();
-			checkf((RpcSubsystem == nullptr),TEXT("Null RpcSubsystem"));
-			auto rpc_message_class = RpcSubsystem->Find_RPC_Message(MessageType);
-
-			if (rpc_message_class == nullptr)
-			{
-				ErrorCode = StaticCast<uint8>(ERPC_ErrorCode::MessageTypeNotFound);
-				return;
-			}
-			
-			
-			//auto Data= NewObject<URPC_Message>(GetTransientPackage(),rpc_message_class);
-			//Data->Serialize(MessageReader);
-			//AddToRoot();//添加缓存
-			
-			//GetWorld()
-			//GetGameInstance()
-			//GetWorld();
-			//FBufferArchive MessageWriter();
-			//MessageWriter.begin()
-			//MessageWriter.Serialize()
-			//TArray<uint8> Bufs;
-			//Bufs.Reserve(len);
-
-			//指定消息序列化
-			/*Data = NewObject<URPC_Hello_Message>();
-			Data->Serialize(MessageReader);
-			RPC_LOG(TEXT("消息读取成功%d"),Data->GetMessageType());
-			*/
-		
-		}
-	};
-
-
-	struct TC_RPC_Message2
+	struct TC_RPC_Message
 	{
 	public:
 		uint16 MessageType;//
 		uint8 ErrorCode;//
 		TArray<uint8> Data;
-		TC_RPC_Message2()
-		{
-			RPC_LOG(TEXT("TC_RPC_Message2()"));
-		}
-		~TC_RPC_Message2()
-		{
-			RPC_LOG(TEXT("~TC_RPC_Message2"));
-		}
-		template<class Archive>
-		void save( Archive& ar ) const
-		{
-			RPC_LOG(TEXT("TC_RPC_Message2 save"));
-			//ar << MessageType;
-			if (Data.Num() == 0)//没有数值
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message Data Null"));
-				//ErrorCode = StaticCast<uint8>(ERPC_ErrorCode::Serialize);
-				ar << StaticCast<uint8>(ERPC_ErrorCode::Serialize);
-				return;
-			}
-		
 
-			/*
-			FBufferArchive MessageWriter;
-			Data->Serialize(MessageWriter);
-			int64 len = MessageWriter.TotalSize();
-			
-			if (len <= 0)
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message Data Null"));
-				ar << StaticCast<uint8>(ERPC_ErrorCode::Serialize);
-				return;
-			}*/
+		TC_RPC_Message(int16 messageType = 0,
+			uint8 errorCode = StaticCast<uint8>(ERPC_ErrorCode::None))
+				:MessageType(0),ErrorCode(errorCode)
+		{
+			//RPC_LOG(TEXT("TC_RPC_Message()"));
+		}
+		/*
+		~TC_RPC_Message()
+		{
+			RPC_LOG(TEXT("~TC_RPC_Message"));
+		}*/
+		
+		template<class Archive>
+		void save(Archive& ar) const
+		{
 			ar << ErrorCode;
 			ar << MessageType;
-			ar << Data.Num();
-			ar << cereal::binary_data(const_cast<uint8*>(Data.GetData()),Data.Num());
+			TArray<uint8>::SizeType len = Data.Num();
+			ar << len;
+			if (len >0)
+			{
+				ar << cereal::binary_data(const_cast<uint8*>(Data.GetData()),len) ;
+			}
 		}
+
 		template<class Archive>
-		void load( Archive& ar )
+		void load(Archive& ar)
 		{
-			RPC_LOG(TEXT("TC_RPC_Message2 load"));
 			ar >> ErrorCode;
-			//RPC_LOG(TEXT("load: %d ,%d"), StaticCast<uint8>(ERPC_ErrorCode::None),ErrorCode);
-			if (ErrorCode != StaticCast<uint8>(ERPC_ErrorCode::None) )
-			{
-				RPC_ERROR(TEXT("TC_RPC_Message load ErrorCode %d"),ErrorCode);
-				return ;
-			}
 			ar >> MessageType;
-			int64 len;
+			TArray<uint8>::SizeType len = 0;
 			ar >> len;
-			if (len  <= 0 )
+			if (len < 0)
 			{
-				RPC_ERROR(TEXT("TC_RPC_Message Load len <0 "));
-				return;
+				RPC_ERROR(TEXT("TC_RPC_Message load len %d"),len);
 			}
-			TArray<uint8> BinaryData;
-			BinaryData.SetNum(len);
 
-			//BinaryData.GetData()
-			//BinaryData.SetNum()
+			Data.Empty();
+			//TArray<uint8> BinaryData;
+			Data.SetNum(len);
+			//BinaryData.SetNum(len);
+			if (len > 0)
+			{
+				FMemoryReader MessageReader(Data);
+				ar >> cereal::binary_data(const_cast<uint8*>(Data.GetData()),len);
+			}
 
+		}
+		/*
+		template <class Archive>
+		void serialize(Archive& ar)
+		{
+			//RPC_LOG(TEXT("TC_RPC_Message serialize"));//这个一般不调用
+			ar(ErrorCode,MessageType);
+			TArray<uint8>::SizeType len = Data.Num();
+			ar(len);
+			if (len >0)
+			{
+				ar(cereal::binary_data(const_cast<uint8*>(Data.GetData()),len));
+			}
+		}*/
+	};
+
+	
+	template<class Archive>
+	void save( Archive& ar,const std::shared_ptr<TC_RPC_Message>& ptr)
+	{
+		//RPC_LOG(TEXT("TC_RPC_Message ptr save"));
+		if (ptr == nullptr)
+		{
+			RPC_ERROR(TEXT("TC_RPC_Message save Null"));
+			return ;
+		}
+		ptr->save(ar);
+	}
+	template<class Archive>
+	void load(Archive& ar,std::shared_ptr<TC_RPC_Message>& ptr)
+	{
+		//RPC_LOG(TEXT("TC_RPC_Message ptr load"));
+		ptr = std::make_shared<TC_RPC_Message>();
+		ptr->load(ar);
+	}
+	
+	#include <string>
+	#include <memory>
+	struct Person
+	{
+	public:
 		
-			FMemoryReader MessageReader(BinaryData);
-			ar >> cereal::binary_data(const_cast<uint8*>(BinaryData.GetData()),len);
+		Person()
+		{
+			RPC_LOG(TEXT("Person()"));
+		}
+		~Person() 
+		{
+			RPC_LOG(TEXT("~Person()"));
+		}
+		Person(const Person& other)
+		{
+			RPC_LOG(TEXT("Person 拷贝"));
+		}
+		Person& operator=(const Person& other) {
+			RPC_LOG(TEXT("Person ="));
+			return *this;
+		}
+		
+		int age;
+		std::string name;
+		template<class Archive>
+		void save(Archive& ar) const
+		{
+			ar << age;
+			ar << name;
+		}
+	
+		template<class Archive>
+		void load(Archive& ar)
+		{
+			ar >> age;
+			ar >> name;
 		}
 	};
+	template<class Archive>
+	void save(Archive& ar, std::shared_ptr<Person>const& j)
+	{
+		ar << j->age;
+		ar << j->name;
+	}
 	
-	
-}
-
-
-template<class Archive>
-void save(Archive& ar,const TArray<uint8>& ay)
-{
-	RPC_LOG(TEXT("TArray save"));
-	ar << ay.Num();
-	ar << cereal::binary_data(const_cast<uint8*>(ay.GetData()),ay.Num());
-	//ar << j.dump();
-}
-
-template<class Archive>
-void load(Archive& ar,const TArray<uint8>& ay)
-{
-	RPC_LOG(TEXT("TArray load"));
-	int32 len;
-	TArray<uint8> BinaryData;
-	ar >> len;
-	BinaryData.SetNum(len);
-	ar >> cereal::binary_data(const_cast<uint8*>(BinaryData.GetData()),len);
+	template<class Archive>
+	void load(Archive& ar,std::shared_ptr<Person>& j)
+	{
+		j = std::make_shared<Person>();
+		ar >> j->age;
+		ar >> j->name;
+	}
 }

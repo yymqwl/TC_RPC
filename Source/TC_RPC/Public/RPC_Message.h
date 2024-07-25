@@ -5,14 +5,16 @@
 
 
 #include "CoreMinimal.h"
+#include "RPC_Log.h"
 #include "UObject/Object.h"
+#include <memory>
 #include "RPC_Message.generated.h"
 
 
 /**
- * 
+ *Rpc_Message消息基类
  */
-UCLASS()
+UCLASS(Abstract)
 class TC_RPC_API URPC_Message : public UObject
 {
 	GENERATED_BODY()
@@ -26,69 +28,50 @@ public:
 	{
 		return  0;/*StaticCast<uint16>(ERPC_MessageType::None);*/
 	}
-	
 };
-/*
-UCLASS()
-class TC_RPC_API URPC_Hello_Message : public URPC_Message
+
+/********
+*******URPC_MessageHandler消息处理基类
+*******
+*******/
+
+UCLASS(Abstract)
+class TC_RPC_API URPC_MessageHandler : public UObject
 {
 	GENERATED_BODY()
-
 public:
-	virtual uint16 GetMessageType() override
+	virtual uint64 Get_Rpc_Ability()
 	{
-		return  StaticCast<uint16>(ERPC_MessageType::Hello_Message);
+		return 0;
+	}
+	virtual TSubclassOf<class URPC_Message> Get_Rpc_Request_Class()
+	{
+		return nullptr;
+	}
+	virtual TSubclassOf<class URPC_Message> Get_Rpc_Reply_Class()
+	{
+		return nullptr;
+	}
+	virtual TObjectPtr<URPC_Message> Process(TObjectPtr<URPC_Message> rpc_request)
+	{
+		TObjectPtr<URPC_Message> rpc_reply;
+		if ( !IsValid(Get_Rpc_Reply_Class()) )
+		{
+			RPC_ERROR(TEXT("URPC_MessageHandler Get_Rpc_Reply_Class"));
+			return rpc_reply;
+		}
+		if ( !IsValid(Get_Rpc_Request_Class()) )
+		{
+			RPC_ERROR(TEXT("URPC_MessageHandler Get_Rpc_Request_Class"));
+			return rpc_reply;
+		}
+		if (!IsValid(rpc_request))
+		{
+			RPC_ERROR(TEXT("URPC_MessageHandler rpc_request Null"));
+			return rpc_reply;
+		}
+		rpc_reply = NewObject<URPC_Message>(this,Get_Rpc_Reply_Class());
+		return rpc_reply;
 	}
 };
 
-struct SomeData
-{
-	int32_t id;
-  
-	template <class Archive>
-	void save( Archive & ar ) const
-	{
-		ar( id );
-	}
-      
-	template <class Archive>
-	void load( Archive & ar )
-	{
-		ar( id );
-	}
-};
-*/
-
-
-//namespace TC_RPC
-//{
-
-//顺序 ErrorCode
-//MessageType
-//
-/*
-template<class Archive>
-void save(Archive& ar, TC_RPC_Message const& p_rpc_msg)
-{
-	RPC_LOG(TEXT("save"));
-	ar << p_rpc_msg.MessageType;
-	if (p_rpc_msg.Data.Get() == nullptr)
-	{
-		return;
-	}
-	FBufferArchive MessageWriter;
-	p_rpc_msg.Data->Serialize(MessageWriter);
-	ar << MessageWriter.TotalSize();
-	for (uint32 i=0;i< MessageWriter.TotalSize();++i)
-	{
-		ar << MessageWriter[i];
-	}
-}
-
-template<class Archive>
-void load(Archive& ar,TC_RPC_Message& p_rpc_msg)
-{
-	RPC_LOG(TEXT("load"));
-	ar >> p_rpc_msg.MessageType;
-}*/
-//}

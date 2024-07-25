@@ -14,7 +14,9 @@ namespace TC_RPC
 		ClientNotStart,//客户端没打开
 		Asio2NetError,//网络问题
 		MessageTypeNotFound,//消息未找到
-		Serialize,
+		Serialize,//序列化错误
+		MessageNotFound,
+		MessageHandleNotFound,
 		Max
 	};
 	ENUM_CLASS_FLAGS(ERPC_ErrorCode)
